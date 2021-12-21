@@ -671,7 +671,7 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
             raise NoMoreTracks
         player.queue.position += index - 1
         await player.stop()
-        await ctx.send(f'Tocando faixa da posição {player.queue.position}.')
+        await ctx.send(f'Tocando faixa da posição {player.queue.position + 2}.')
 
     @forward_command.error
     async def forward_command_error(self, ctx, exc):
@@ -685,11 +685,11 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
         player = self.get_player(ctx)
         if player.queue.is_empty:
             raise QueueIsEmpty
-        if not 0 >= index >= player.queue.length:
+        if not 0 <= index <= player.queue.length:
             raise NoMoreTracks
         player.queue.position -= index + 1
         await player.stop()
-        await ctx.send(f'Tocando faixa da posição {player.queue.position}.')
+        await ctx.send(f'Tocando faixa da posição {player.queue.position + 2}.')
 
     @back_command.error
     async def back_command_error(self, ctx, exc):

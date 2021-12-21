@@ -85,7 +85,7 @@ Qualquer dúvidas, estou à disposição.
 2. Melhorar documentação interna do bot no discord;
 3. Melhorar mensagens de erro ao executar comando errado;
 4. Implementar testes;
-5. Criar um ícone legal;
+5. ~~Criar um ícone legal;~~
 6. (Caso Possível) Testar métodos de integração com API do radiooooo.com.
 
 ###### tags: `Discord` `Documentation` `MusiKing` `Audio`

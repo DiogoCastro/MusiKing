@@ -444,7 +444,7 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
         await ctx.send(f'O modo de repetição foi mudado para {mode}.')
 
     @commands.command(name='queue', aliases=['q'])
-    async def queue_command(self, ctx, show: t.Optional[int] = 50):
+    async def queue_command(self, ctx, show: t.Optional[int] = 10):
         player = self.get_player(ctx)
 
         if player.queue.is_empty:
@@ -671,7 +671,7 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
             raise NoMoreTracks
         player.queue.position += index
         await player.stop()
-        await ctx.send(f'Tocando faixa da posição {index}.')
+        await ctx.send(f'Tocando faixa da posição {player.queue.position}.')
 
     @forward_command.error
     async def forward_command_error(self, ctx, exc):

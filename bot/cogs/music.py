@@ -263,7 +263,7 @@ class Player(wavelink.Player):
         embed.add_field(name='Título da Faixa',
                         value=tracks[0].title, inline=False)
         await self.play(self.queue.current_track)
-        await ctx.send(embed, embed)
+        await ctx.send(embed=embed)
 
     async def advance(self):
         try:

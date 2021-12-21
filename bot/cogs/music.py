@@ -669,12 +669,30 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
             raise QueueIsEmpty
         if not 0 <= index <= player.queue.length:
             raise NoMoreTracks
-        player.queue.position += index
+        player.queue.position += index - 1
         await player.stop()
         await ctx.send(f'Tocando faixa da posição {player.queue.position}.')
 
     @forward_command.error
     async def forward_command_error(self, ctx, exc):
+        if isinstance(exc, QueueIsEmpty):
+            await ctx.send('Não existem faixas na fila.')
+        elif isinstance(exc, NoMoreTracks):
+            await ctx.send('O valor inserido ultrapassa o limite da fila.')
+
+    @commands.command(name='back', aliases=['bc'])
+    async def back_command(self, ctx, index: int):
+        player = self.get_player(ctx)
+        if player.queue.is_empty:
+            raise QueueIsEmpty
+        if not 0 >= index >= player.queue.length:
+            raise NoMoreTracks
+        player.queue.position -= index + 1
+        await player.stop()
+        await ctx.send(f'Tocando faixa da posição {player.queue.position}.')
+
+    @back_command.error
+    async def back_command_error(self, ctx, exc):
         if isinstance(exc, QueueIsEmpty):
             await ctx.send('Não existem faixas na fila.')
         elif isinstance(exc, NoMoreTracks):

@@ -242,7 +242,7 @@ class Player(wavelink.Player):
             await msg.add_reaction(emoji)
 
         try:
-            reaction, _ = await self.bot.wait_for('reaction_add', timeout=30.0, check=_check)
+            reaction, _ = await self.bot.wait_for('reaction_add', timeout=60.0, check=_check)
         except asyncio.TimeoutError:
             await msg.delete()
             await ctx.message.delete()
@@ -350,7 +350,7 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
                 raise QueueIsEmpty
 
             await player.set_pause(False)
-            await ctx.send('Tocando...')
+            await ctx.send('Player pausado.')
 
         else:
             query = query.strip('<>')
@@ -401,7 +401,7 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
     @next_command.error
     async def next_command_error(self, ctx, exc):
         if isinstance(exc, QueueIsEmpty):
-            await ctx.send('Impossível de executar, já que a fila está vazia.')
+            await ctx.send('Impossível de executar, já que a fila não está vazia.')
         elif isinstance(exc, NoMoreTracks):
             await ctx.send('Não existem mais faixas na fila.')
 
@@ -419,7 +419,7 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
     @previous_command.error
     async def previous_command_error(self, ctx, exc):
         if isinstance(exc, QueueIsEmpty):
-            await ctx.send('Erro ao executar, a fila está vazia')
+            await ctx.send('Erro ao executar, já que a fila não está vazia')
         elif isinstance(exc, NoPreviousTracks):
             await ctx.send('Não existem faixas anteriores nessa fila.')
 
@@ -432,7 +432,7 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
     @shuffle_command.error
     async def shuffle_command_error(self, ctx, exc):
         if isinstance(exc, QueueIsEmpty):
-            await ctx.send('Impossível embaralhar a fila, porque está vazia.')
+            await ctx.send('Impossível embaralhar a fila, já que está vazia.')
 
     @commands.command(name='repeat', aliases=['repete'])
     async def repeat_command(self, ctx, mode: str):
@@ -444,7 +444,7 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
         await ctx.send(f'O modo de repetição foi mudado para {mode}.')
 
     @commands.command(name='queue', aliases=['q'])
-    async def queue_command(self, ctx, show: t.Optional[int] = 50):
+    async def queue_command(self, ctx, show: t.Optional[int] = 10):
         player = self.get_player(ctx)
 
         if player.queue.is_empty:
@@ -614,11 +614,11 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
             raise PlayerIsAlreadyPaused
 
         embed = discord.Embed(
-            title='Tocando agora',
+            title='Now playing',
             colour=ctx.author.colour,
             timestamp=dt.datetime.utcnow(),
         )
-        embed.set_author(name='Info. Geral')
+        embed.set_author(name='Playback Information')
         embed.set_footer(
             text=f'Solicitado por {ctx.author.display_name}', icon_url=ctx.author.avatar_url)
         embed.add_field(name='Título da Faixa',

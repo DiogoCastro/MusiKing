@@ -212,7 +212,7 @@ class Player(wavelink.Player):
                 await ctx.send(f'Adicionei {track.title} na fila.')
 
         if not self.is_playing and not self.queue.is_empty:
-            await self.start_playback(ctx)
+            await self.start_playback(ctx, tracks)
 
     async def choose_track(self, ctx, tracks):
         def _check(r, u):
@@ -242,7 +242,7 @@ class Player(wavelink.Player):
             await msg.add_reaction(emoji)
 
         try:
-            reaction, _ = await self.bot.wait_for('reaction_add', timeout=60.0, check=_check)
+            reaction, _ = await self.bot.wait_for('reaction_add', timeout=30.0, check=_check)
         except asyncio.TimeoutError:
             await msg.delete()
             await ctx.message.delete()
@@ -250,8 +250,7 @@ class Player(wavelink.Player):
             await msg.delete()
             return tracks[OPTIONS[reaction.emoji]]
 
-    async def start_playback(self, ctx):
-        player = self.get_player(ctx)
+    async def start_playback(self, ctx, tracks):
 
         embed = discord.Embed(
             title='Tocando agora',
@@ -262,10 +261,7 @@ class Player(wavelink.Player):
         embed.set_footer(
             text=f'Solicitado por {ctx.author.display_name}', icon_url=ctx.author.avatar_url)
         embed.add_field(name='Título da Faixa',
-                        value=player.queue.current_track.title, inline=False)
-        embed.add_field(
-            name='Artista', value=player.queue.current_track.author, inline=False)
-
+                        value=tracks[0].title, inline=False)
         await self.play(self.queue.current_track)
         await ctx.send(embed, embed)
 

@@ -688,6 +688,8 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
         if not 0 <= index <= player.queue.length:
             raise NoMoreTracks
         player.queue.position -= index + 1
+        if player.queue.position < 0:
+            raise NoMoreTracks
         await player.stop()
         await ctx.send(f'Tocando faixa da posição {player.queue.position + 2}.')
 

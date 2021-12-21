@@ -350,7 +350,7 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
                 raise QueueIsEmpty
 
             await player.set_pause(False)
-            await ctx.send('Player pausado.')
+            await ctx.send('Tocando...')
 
         else:
             query = query.strip('<>')
@@ -444,7 +444,7 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
         await ctx.send(f'O modo de repetição foi mudado para {mode}.')
 
     @commands.command(name='queue', aliases=['q'])
-    async def queue_command(self, ctx, show: t.Optional[int] = 10):
+    async def queue_command(self, ctx, show: t.Optional[int] = 50):
         player = self.get_player(ctx)
 
         if player.queue.is_empty:
@@ -618,7 +618,7 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
             colour=ctx.author.colour,
             timestamp=dt.datetime.utcnow(),
         )
-        embed.set_author(name='Playback Information')
+        embed.set_author(name='Info. do Playback')
         embed.set_footer(
             text=f'Solicitado por {ctx.author.display_name}', icon_url=ctx.author.avatar_url)
         embed.add_field(name='Título da Faixa',
@@ -629,7 +629,7 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
         position = divmod(player.position, 60000)
         length = divmod(player.queue.current_track.length, 60000)
         embed.add_field(
-            name='Posição',
+            name='Duração',
             value=f'{int(position[0])}:{round(position[1]/1000):02}/{int(length[0])}:{round(length[1]/1000):02}',
             inline=False
         )
@@ -661,6 +661,24 @@ class Musiking(commands.Cog, wavelink.WavelinkMixin):
             await ctx.send('Não existem faixas na fila.')
         elif isinstance(exc, NoMoreTracks):
             await ctx.send('O índice inserido está fora do limite da fila.')
+
+    @commands.command(name='forward', aliases=['fw'])
+    async def forward_command(self, ctx, index: int):
+        player = self.get_player(ctx)
+        if player.queue.is_empty:
+            raise QueueIsEmpty
+        if not 0 <= index <= player.queue.length:
+            raise NoMoreTracks
+        player.queue.position += index
+        await player.stop()
+        await ctx.send(f'Tocando faixa da posição {index}.')
+
+    @forward_command.error
+    async def forward_command_error(self, ctx, exc):
+        if isinstance(exc, QueueIsEmpty):
+            await ctx.send('Não existem faixas na fila.')
+        elif isinstance(exc, NoMoreTracks):
+            await ctx.send('O valor inserido ultrapassa o limite da fila.')
 
     @commands.command(name='restart', aliases=['rs'])
     async def restart_command(self, ctx):
